@@ -7,6 +7,7 @@ var limit = 20;
 var offset = 0;
 var totalElements = 0;
 const debug = true;
+var favoriteHero = false;
 function generateMD5Hash(value) {
   return CryptoJS.MD5(value).toString();
 }
@@ -41,6 +42,7 @@ function hideLoadingScreen() {
 // Function to call the Marvel API
 function callMarvelAPI() {
   try {
+    favoriteHero = false;
     showLoadingScreen();
     const ts = new Date().getTime().toString();
     const hash = generateMD5Hash(ts + privateKey + publicKey);
@@ -84,6 +86,7 @@ function callMarvelAPI() {
           nextButton.classList.remove("disabled");
         }
         updateCardButton();
+         document.getElementById("pagination").style.display = "flex";
       })
       .catch((error) => {
         // Handle any errors that occur during the API call
@@ -254,7 +257,7 @@ function removeFavorite(button) {
     let cardId = card.id;
     cardId = parseInt(cardId.split("_")[1]);
     let cardName = card.querySelector(".card-name").innerHTML;
-    let imageUrl = card.querySelector("card-img").src;
+    let imageUrl = card.querySelector(".card-img img").src;
     if (debug) {
       console.log("removeFavorite function Start");
       console.log("Card ID:", cardId);
@@ -282,6 +285,9 @@ function removeFavorite(button) {
     // Store the updated JSON string in localStorage
     localStorage.setItem("superHero", updatedArrayJSON);
     updateCardButton();
+    if (favoriteHero) {
+      showFavoriteSuperHero();
+    }
   } catch (error) {
     console.log(error);
   }
@@ -307,3 +313,41 @@ function cardDetails() {
     alert("You are Offline");
   }
 })();
+
+
+
+function showFavoriteSuperHero() {
+  try {
+    favoriteHero = true;
+    if (debug) {
+      console.log("showFavoriteSuperHero function start");
+    }
+    // Fetch the data from localStorage
+    const existingArrayJSON = localStorage.getItem("superHero");
+    let existingArray = [];
+
+    // Parse stored JSON into an array (if it exists)
+    if (existingArrayJSON) {
+      existingArray = JSON.parse(existingArrayJSON);
+    }
+    // Display the favorites
+    if (existingArray.length >= 0) {
+      cardContainer.innerHTML = "";
+      // Loop through the array of favorites
+        for (let i = 0; i < existingArray.length; i++) {
+          var card = cardTemplate.cloneNode(true); // Clone the card template
+          card.id = "card_" + existingArray[i].id; // Set a unique ID for each card
+          var imgElement = card.querySelector(".card-img img");
+          imgElement.src =
+            existingArray[i].path;
+          var imgElement = card.querySelector(".card-info span");
+          imgElement.innerHTML = existingArray[i].name;
+          cardContainer.appendChild(card);
+      }
+      document.getElementById("pagination").style.display = "none";
+      updateCardButton();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
