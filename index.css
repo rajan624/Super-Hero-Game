@@ -127,7 +127,7 @@ body {
   margin-top: 10px;
 }
  .outline-button {
-      display: inline-block;
+      display: none;
       padding: 8px 16px;
       border: 2px solid #000;
       border-radius: 8px;
