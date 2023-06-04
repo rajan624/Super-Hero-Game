@@ -295,11 +295,16 @@ function removeFavorite(button) {
 
 
 //get Detail of specific super hero
-function cardDetails() {
+function cardDetails(card) {
   try {
     if (debug) {
       console.log("cardDetails function start");
     }
+    console.log(card.id);
+    var url = "superHeroProfile.html?id=" + encodeURIComponent(card.id);
+
+    // Navigate to the profile.html page with the ID parameter
+    window.location.href = url;
   } catch (error) {
     console.log(error);
   }
