@@ -42,11 +42,17 @@ function hideLoadingScreen() {
 // Function to call the Marvel API
 function callMarvelAPI() {
   try {
+    let searchInput = document.getElementById("searchInput").value;
+    if (searchInput && searchInput !== "") {
+      searchInput = "&nameStartsWith="+searchInput;
+    } else {
+      searchInput = "";
+    }
     favoriteHero = false;
     showLoadingScreen();
     const ts = new Date().getTime().toString();
     const hash = generateMD5Hash(ts + privateKey + publicKey);
-    const apiUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=${publicKey}&ts=${ts}&hash=${hash}&limit=${limit}&offset=${offset}`;
+    const apiUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=${publicKey}&ts=${ts}&hash=${hash}&limit=${limit}&offset=${offset}${searchInput}`;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -151,10 +157,18 @@ function movePreviousPage() {
     button.addEventListener("click", moveNextPage);
     var button = document.getElementById("previous-page");
     button.addEventListener("click", movePreviousPage);
+    const searchButton = document.getElementById("searchButton");
+    searchButton.addEventListener("click", clearInput);
+
   } catch (error) {
     console.log(error);
   }
 })();
+function clearInput() {
+  console.log(
+  "sasasfsa"
+)
+}
 
 //Add favorite superhero function
 function addFavorite(button) {
@@ -360,66 +374,8 @@ function showFavoriteSuperHero() {
 
 function searchByName(event) {
   event.preventDefault();
-  const searchInput = document.getElementById('searchInput').value;
+
 
   // Call your API using the search input
-  callAPI(searchInput);
-}
-
-function callAPI(searchQuery) {
-  try {
-    favoriteHero = false;
-    showLoadingScreen();
-    const ts = new Date().getTime().toString();
-    const hash = generateMD5Hash(ts + privateKey + publicKey);
-    const apiUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=${publicKey}&ts=${ts}&hash=${hash}&limit=${limit}&offset=${offset}&nameStartsWith=${searchQuery}`;
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        if (debug) {
-          console.log(data);
-        }
-        hideLoadingScreen();
-        // Process the API response data here
-        cardContainer.innerHTML = "";
-        var superHeroArray = data.data.results;
-        totalElements = data.data.total;
-        for (let i = 0; i < superHeroArray.length; i++) {
-          var card = cardTemplate.cloneNode(true); // Clone the card template
-          card.id = "card_" + superHeroArray[i].id; // Set a unique ID for each card
-          var imgElement = card.querySelector(".card-img img");
-          imgElement.src = superHeroArray[i].thumbnail.path + "." + superHeroArray[i].thumbnail.extension;
-          var imgElement = card.querySelector(".card-info span");
-          imgElement.innerHTML =
-            superHeroArray[i].name;
-          cardContainer.appendChild(card);
-        }
-        document.getElementById("current-page").innerText = `${data.data.offset + 1
-          } - ${data.data.offset + data.data.count} of ${totalElements} `;
-        if (offset === 0) {
-          let previousButton = document.getElementById("previous-button");
-          previousButton.classList.add("disabled");
-        } else {
-          let previousButton =
-            document.getElementById("previous-button");
-          previousButton.classList.remove("disabled");
-        }
-        if (data.data.offset + data.data.count >= totalElements) {
-          let nextButton = document.getElementById("next-button");
-          nextButton.classList.add("disabled");
-        } else {
-          let nextButton = document.getElementById("next-button");
-          nextButton.classList.remove("disabled");
-        }
-        updateCardButton();
-        document.getElementById("pagination").style.display = "flex";
-        
-      })
-      .catch((error) => {
-        // Handle any errors that occur during the API call
-        console.error("Error:", error);
-      });
-  } catch (error) {
-    console.log(error);
-  }
+  callMarvelAPI();
 }
