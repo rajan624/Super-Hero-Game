@@ -47,4 +47,4 @@ Follow the steps below to get a local copy of the project and run it on your mac
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/rajan624/Coding_ninjas_super_hero.git
