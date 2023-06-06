@@ -8,6 +8,34 @@ function generateMD5Hash(value) {
 function goToMainPage() {
     window.location.href = "/";
 }
+
+
+//Function to start the loading function
+function showLoadingScreen() {
+  try {
+
+    if (debug) {
+      console.log("showLoadingScreen Start");
+    }
+    document.getElementById("loading-screen").style.display = "block";
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// Function to hide the loading screen
+function hideLoadingScreen() {
+  try {
+
+    if (debug) {
+      console.log("hideLoadingScreen Start");
+      console.log(document.getElementById("loading-screen"));
+    }
+    document.getElementById("loading-screen").style.display = "none";
+  } catch (error) {
+    console.log(error);
+  }
+}
 (function getProfileId() {
    var urlString = window.location.href;
 
@@ -25,8 +53,9 @@ function goToMainPage() {
 // Function to call the Marvel API
 function getSuperHeroDetails() {
   try {
+
     favoriteHero = false;
-    // showLoadingScreen();
+     showLoadingScreen();
     const ts = new Date().getTime().toString();
     const hash = generateMD5Hash(ts + privateKey + publicKey);
     const apiUrl = `https://gateway.marvel.com:443/v1/public/characters/${superHeroId}?apikey=${publicKey}&ts=${ts}&hash=${hash}`;
@@ -36,40 +65,15 @@ function getSuperHeroDetails() {
         if (debug) {
           console.log(data);
         }
-    //     hideLoadingScreen();
-    //     // Process the API response data here
-    //     cardContainer.innerHTML = "";
-    //     var superHeroArray = data.data.results;
-    //     totalElements = data.data.total;
-    //     for (let i = 0; i < superHeroArray.length; i++) {
-    //       var card = cardTemplate.cloneNode(true); // Clone the card template
-    //       card.id = "card_" + superHeroArray[i].id; // Set a unique ID for each card
-    //       var imgElement = card.querySelector(".card-img img");
-    //       imgElement.src = superHeroArray[i].thumbnail.path + "." + superHeroArray[i].thumbnail.extension;
-    //       var imgElement = card.querySelector(".card-info span");
-    //       imgElement.innerHTML =
-    //         superHeroArray[i].name;
-    //       cardContainer.appendChild(card);
-    //     }
-    //     document.getElementById("current-page").innerText = `${data.data.offset + 1
-    //       } - ${data.data.offset + data.data.count} of ${totalElements} `;
-    //     if (offset === 0) {
-    //       let previousButton = document.getElementById("previous-button");
-    //       previousButton.classList.add("disabled");
-    //     } else {
-    //       let previousButton =
-    //         document.getElementById("previous-button");
-    //       previousButton.classList.remove("disabled");
-    //     }
-    //     if (data.data.offset + data.data.count >= totalElements) {
-    //       let nextButton = document.getElementById("next-button");
-    //       nextButton.classList.add("disabled");
-    //     } else {
-    //       let nextButton = document.getElementById("next-button");
-    //       nextButton.classList.remove("disabled");
-    //     }
-    //     updateCardButton();
-    //      document.getElementById("pagination").style.display = "flex";
+        document.getElementById("pro-image").src = data.data.results[0].thumbnail.path + "." + data.data.results[0].thumbnail.extension;
+        document.getElementById("super-hero-name").innerText = data.data.results[0].name;
+        document.getElementById("comics-no").innerText = data.data.results[0].comics.available;
+        document.getElementById("series-no").innerText = data.data.results[0].series.available;
+        document.getElementById("stories-no").innerText = data.data.results[0].stories.available;
+        document.getElementById("events-no").innerText = data.data.results[0].events.available;
+        document.getElementById("events-no").innerText = data.data.results[0].events.available;
+        document.getElementById("description").innerText = data.data.results[0].description;
+        hideLoadingScreen();
       })
       .catch((error) => {
         // Handle any errors that occur during the API call
@@ -79,6 +83,99 @@ function getSuperHeroDetails() {
     console.log(error);
   }
 }
-
-
 getSuperHeroDetails();
+//Add favorite superhero function
+function addFavorite() {
+  try {
+    if (debug) {
+      console.log("addFavorite function Start");
+    }
+    // Retrieve existing array from localStorage
+    const existingArrayJSON = localStorage.getItem("superHero");
+    let existingArray = [];
+
+    // Parse stored JSON into an array (if it exists)
+    if (existingArrayJSON) {
+      existingArray = JSON.parse(existingArrayJSON);
+    }
+    let nameElement = document.getElementById("super-hero-name");
+    let imageUrl = document.getElementById("pro-image");
+    // Create a new object
+    superHeroId = Number(superHeroId);
+    const newObject = { id: superHeroId, name: nameElement.innerHTML, path: imageUrl.src };
+
+    // Add the new object to the array
+    existingArray.push(newObject);
+    console.log(existingArray);
+    // Convert the updated array to JSON string
+    const updatedArrayJSON = JSON.stringify(existingArray);
+
+    // Store the updated JSON string in localStorage
+    localStorage.setItem("superHero", updatedArrayJSON);
+    updateButton();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+//update Button Name and Functionality
+function updateButton() {
+
+  try {
+    if (debug) {
+      console.log("updateFunction function Start");
+    }
+    let favoriteSuperHero = [];
+    let storageFavoriteSuperHero = window.localStorage.getItem("superHero");
+    if (storageFavoriteSuperHero) {
+      favoriteSuperHero = JSON.parse(storageFavoriteSuperHero);
+    }
+    let favoriteSuperHeroId = favoriteSuperHero.map(obj => obj.id);
+    console.log(favoriteSuperHeroId);
+    superHeroId = Number(superHeroId);
+    // Loop through each card
+      if (favoriteSuperHeroId.includes(superHeroId)) {
+        document.getElementById("add-Favorite").style.display = "none";
+        document.getElementById("remove-Favorite").style.display = "block";
+          } else {
+        document.getElementById("add-Favorite").style.display = "block";
+        document.getElementById("remove-Favorite").style.display = "none";
+          }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+updateButton();
+//Remove favorite SuperHero 
+function removeFavorite(button) {
+  try {
+    if (debug) {
+      console.log("removeFavorite function Start");
+    }
+    // Retrieve existing array from localStorage
+    const existingArrayJSON = localStorage.getItem("superHero");
+    let existingArray = [];
+
+    // Parse stored JSON into an array (if it exists)
+    if (existingArrayJSON) {
+      existingArray = JSON.parse(existingArrayJSON);
+    }
+
+    // Add the new object to the array
+    var filteredArray = existingArray.filter(function (obj) {
+      return obj.id !== superHeroId;
+    });
+
+    // Convert the updated array to JSON string
+    const updatedArrayJSON = JSON.stringify(filteredArray);
+
+    // Store the updated JSON string in localStorage
+    localStorage.setItem("superHero", updatedArrayJSON);
+    updateButton();
+  } catch (error) {
+    console.log(error);
+  }
+}
