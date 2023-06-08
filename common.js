@@ -6,7 +6,7 @@ function generateMD5Hash(value) {
   return CryptoJS.MD5(value).toString();
 }
 function goToMainPage() {
-    window.location.href = "/";
+  window.location.href = "/Coding_ninjas_super_hero";
 }
 
 
