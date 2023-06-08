@@ -374,8 +374,14 @@ function showFavoriteSuperHero() {
 
 function searchByName(event) {
   event.preventDefault();
-
-
   // Call your API using the search input
   callMarvelAPI();
+}
+
+
+//function to start from starting
+function gotoStartPage() {
+  limit = 20;
+  offset = 0;
+  callMarvelAPI()
 }
