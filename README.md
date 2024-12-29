@@ -1,4 +1,6 @@
-# Coding_ninjas_super_hero
+# Super Hero Game
+
+Check out the live version of the project: <a href="https://rajan624.github.io/Super-Hero-Game/" target="_blank">Super Hero Game</a>
 
 # Superhero Search Website
 
